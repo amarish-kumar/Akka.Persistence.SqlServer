@@ -146,7 +146,7 @@ Target "StartDbContainer" <| fun _ ->
         .AddScript(@"Set-ExecutionPolicy Unrestricted -Force")
         .AddScript(@"./docker_sql_express.ps1")
         .Invoke()
-        |> Seq.iter (printfn "\t %O")
+        |> ignore
     match environVarOrNone "container_ip" with
         | Some x -> logfn "SQL Express Docker container created with IP address: %s" x
         | None -> failwith "SQL Express Docker container was not started successfully... failing build"
