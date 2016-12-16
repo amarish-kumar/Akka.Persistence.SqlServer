@@ -143,7 +143,7 @@ Target "RunTests" <| fun _ ->
 Target "StartDbContainer" <| fun _ -> 
     logfn "Starting SQL Express Docker container..."
     let posh = PowerShell.Create()
-                    .AddScript(@"Set-ExecutionPolicy Unrestricted -Force")
+                    .AddScript(@"Stop-Service docker; Start-Service docker")
                     .AddScript(@"./docker_sql_express.ps1")
     posh.Invoke() |> Seq.iter (logfn "%O")
     match posh.HadErrors with
