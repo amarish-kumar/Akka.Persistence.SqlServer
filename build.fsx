@@ -142,9 +142,8 @@ Target "RunTests" <| fun _ ->
 
 Target "StartDbContainer" <| fun _ -> 
     logfn "Starting SQL Express Docker container..."
-    let posh = PowerShell.Create()
-                    .AddScript(@"docker version")
-                    .AddScript(@"Stop-Service docker; Start-Service docker")
+    let posh = PowerShell.Create()                    
+                    .AddScript(@"wget https://github.com/Microsoft/Virtualization-Documentation/raw/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsin | iex")
                     .AddScript(@"./docker_sql_express.ps1")
     posh.Invoke() |> Seq.iter (logfn "%O")
     match posh.HadErrors with
