@@ -193,9 +193,10 @@ Target "DiagnoseDockerOnBuildAgent" <| fun _ ->
     let posh = PowerShell.Create() 
                     .AddScript(@"Restart-Service docker -Force")
                     .AddScript(@"Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Virtualization-Documentation/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsing | Invoke-Expression | Export-CSV containerDebug.csv")
-                    .AddScript(@"Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-30)  | Sort-Object Time | Export-CSV last30minutes.csv")
-                    .AddScript(@"cat last30minutes.csv")
                     .AddScript(@"cat containerDebug.csv")
+//                    .AddScript(@"Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-30)  | Sort-Object Time | Export-CSV last30minutes.csv")
+//                    .AddScript(@"cat last30minutes.csv")
+
 //                    .AddScript(@"wget https://github.com/Microsoft/Virtualization-Documentation/raw/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsin | iex")
     posh.Invoke() 
         |> Seq.iter (fun x -> logfn "%O" x)
