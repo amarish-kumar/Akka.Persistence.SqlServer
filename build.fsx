@@ -188,6 +188,15 @@ FinalTarget "TearDownDbContainer" <| fun _ ->
 
 Target "ActivateFinalTargets"  <| fun _ ->
     ActivateFinalTarget "TearDownDbContainer"
+
+Target "DiagnoseDockerOnBuildAgent" <| fun _ ->
+    let posh = PowerShell.Create()                    
+                    .AddScript(@"wget https://github.com/Microsoft/Virtualization-Documentation/raw/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsin | iex")
+    posh.Invoke() |> Seq.iter (logfn "%O")
+    match posh.HadErrors with
+    | true -> posh.Streams.Error |> Seq.iter (logfn "\t %O")
+              failwith "SQL Express Docker container startup encountered an error... failing build"
+    | false -> ()
     
 //--------------------------------------------------------------------------------
 // Nuget targets 
