@@ -194,7 +194,7 @@ Target "DiagnoseDockerOnBuildAgent" <| fun _ ->
                     .AddScript("Stop-Service docker; Start-Service docker")    
                     .AddScript("Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-5) | Sort-Object Time")               
 //                    .AddScript(@"wget https://github.com/Microsoft/Virtualization-Documentation/raw/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsin | iex")
-    posh.Invoke() |> Seq.iter (logfn "%O")
+    posh.Invoke() |> Seq.iter (logfn "%s")
     match posh.HadErrors with
     | true -> posh.Streams.Error |> Seq.iter (logfn "\t %O")
     | false -> ()
