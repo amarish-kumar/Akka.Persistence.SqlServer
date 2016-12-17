@@ -191,8 +191,9 @@ Target "ActivateFinalTargets"  <| fun _ ->
 
 Target "DiagnoseDockerOnBuildAgent" <| fun _ ->
     let posh = PowerShell.Create() 
-                    .AddScript(@"Remove-ItemProperty -Path 'HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization\Containers' -Name VSmbDisableOplocks")
-                    .AddScript(@"Stop-Service docker; Start-Service docker")
+                    .AddScript(@"Get-NetNat | Remove-NetNat")
+                    .AddScript(@"Restart-Service hns")
+                    .AddScript(@"Restart-Service docker")
                     .AddScript(@"Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-30)  | Sort-Object Time | Export-CSV last30minutes.csv")
                     .AddScript(@"cat last30minutes.csv")
 //                    .AddScript(@"wget https://github.com/Microsoft/Virtualization-Documentation/raw/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsin | iex")
