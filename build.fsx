@@ -191,7 +191,6 @@ Target "ActivateFinalTargets"  <| fun _ ->
 
 Target "DiagnoseDockerOnBuildAgent" <| fun _ ->
     let posh = PowerShell.Create() 
-                    .AddScript(@"Get-NetNat | Remove-NetNat")
                     .AddScript(@"Restart-Service hns -Confirm")
                     .AddScript(@"Restart-Service docker -Confirm")
                     .AddScript(@"Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-30)  | Sort-Object Time | Export-CSV last30minutes.csv")
