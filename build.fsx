@@ -192,8 +192,8 @@ Target "ActivateFinalTargets"  <| fun _ ->
 Target "DiagnoseDockerOnBuildAgent" <| fun _ ->
     let posh = PowerShell.Create() 
                     .AddScript(@"Get-NetNat | Remove-NetNat")
-                    .AddScript(@"Restart-Service hns")
-                    .AddScript(@"Restart-Service docker")
+                    .AddScript(@"Restart-Service hns -Confirm")
+                    .AddScript(@"Restart-Service docker -Confirm")
                     .AddScript(@"Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-30)  | Sort-Object Time | Export-CSV last30minutes.csv")
                     .AddScript(@"cat last30minutes.csv")
 //                    .AddScript(@"wget https://github.com/Microsoft/Virtualization-Documentation/raw/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsin | iex")
