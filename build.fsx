@@ -190,10 +190,14 @@ Target "ActivateFinalTargets"  <| fun _ ->
     ActivateFinalTarget "TearDownDbContainer"
 
 Target "DiagnoseDockerOnBuildAgent" <| fun _ ->
-    let posh = PowerShell.Create()             
-                    .AddScript(@"rm C:\ProgramData\docker.pid")
-                    .AddScript(@"Remove-ItemProperty -Path 'HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization\Containers' -Name VSmbDisableOplocks")
-                    .AddScript(@"Restart-Service docker -Force")
+    let posh = PowerShell.Create()
+                    .AddScript(@"sc.exe qc docker")           
+
+                        
+
+//                    .AddScript(@"rm C:\ProgramData\docker.pid")
+//                    .AddScript(@"Remove-ItemProperty -Path 'HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization\Containers' -Name VSmbDisableOplocks")
+//                    .AddScript(@"Restart-Service docker -Force")
 
 //                    .AddScript(@"Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Virtualization-Documentation/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsing | Invoke-Expression | Export-CSV containerDebug.csv")
 //                    .AddScript(@"cat containerDebug.csv")
