@@ -191,10 +191,12 @@ Target "ActivateFinalTargets"  <| fun _ ->
 
 Target "DiagnoseDockerOnBuildAgent" <| fun _ ->
     let posh = PowerShell.Create() 
-                    .AddScript("Stop-Service docker; Start-Service docker")    
-                    .AddScript("Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-5) | Sort-Object Time")               
+                    .AddScript("Stop-Service docker; Start-Service docker")
+                    .AddScript("Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-30)  | Sort-Object Time | Export-CSV last30minutes.csv")
+                    .AddScript("cat last30minutes.csv")
 //                    .AddScript(@"wget https://github.com/Microsoft/Virtualization-Documentation/raw/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsin | iex")
-    posh.Invoke() |> Seq.iter (fun x -> x.Properties |> Seq.iter (fun y -> logfn "%s" (y.ToString())))
+    posh.Invoke() 
+        |> Seq.iter (fun x -> logfn "%O" x)
     match posh.HadErrors with
     | true -> posh.Streams.Error |> Seq.iter (logfn "\t %O")
     | false -> ()
