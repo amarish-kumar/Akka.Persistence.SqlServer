@@ -207,12 +207,15 @@ Target "DiagnoseDockerOnBuildAgent" <| fun _ ->
 //    match posh.HadErrors with
 //    | true -> posh.Streams.Error |> Seq.iter (logfn "\t %O")
 //    | false -> ()
-//        let posh = ExecProcessAndReturnMessages (fun info ->
-//            info.FileName <- @"powershell.exe" 
-//            info.Verb <- "docker version") (TimeSpan.FromMinutes 5.0)
-//        posh.Messages |> Seq.iter (logfn "%O")
-        ExecProcessElevated "powershell" "Restart-Service docker -Force" (TimeSpan.FromMinutes 5.0)
-        |> ignore
+        let posh = ExecProcessAndReturnMessages (fun info ->
+            info.FileName <- @"powershell.exe" 
+            info.Arguments <- @"Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Virtualization-Documentation/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsing | Invoke-Expression"
+            info.CreateNoWindow <- true) (TimeSpan.FromMinutes 5.0)
+        posh.Messages |> Seq.iter (logfn "%O")
+        posh.Errors |> Seq.iter (logfn "%O")       
+        log (posh.OK.ToString())
+//        ExecProcessElevated "powershell" "Restart-Service docker -Force" (TimeSpan.FromMinutes 5.0)
+//        |> ignore
 
     
 //--------------------------------------------------------------------------------
