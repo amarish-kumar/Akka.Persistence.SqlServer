@@ -199,8 +199,8 @@ Target "DiagnoseDockerOnBuildAgent" <| fun _ ->
 //                    .AddScript(@"cat containerDebug.csv")
 
                     .AddScript(@"Get-NetNat | Remove-NetNat -Force")
-                    .AddScript(@"Start-Service docker")
-
+                    .AddScript(@"Start-Service docker -Force")
+                     
                     .AddScript(@"Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-30)  | Sort-Object Time | Export-CSV last30minutes.csv")
                     .AddScript(@"cat last30minutes.csv")
 
