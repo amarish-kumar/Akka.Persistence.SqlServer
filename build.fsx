@@ -209,7 +209,7 @@ Target "DiagnoseDockerOnBuildAgent" <| fun _ ->
 //    | false -> ()
         let posh = ExecProcessAndReturnMessages (fun info ->
             info.FileName <- @"powershell.exe" 
-            info.Arguments <- @"Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Virtualization-Documentation/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsing | Invoke-Expression"
+            info.Arguments <- @"Restart-Service docker -Force"
             info.CreateNoWindow <- true) (TimeSpan.FromMinutes 5.0)
         posh.Messages |> Seq.iter (logfn "%O")
         posh.Errors |> Seq.iter (logfn "%O")       
