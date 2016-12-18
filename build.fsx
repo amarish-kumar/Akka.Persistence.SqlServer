@@ -141,17 +141,14 @@ Target "RunTests" <| fun _ ->
         (fun p -> { p with HtmlOutputPath = Some(testOutput @@ "xunit.html") })
         xunitTestAssemblies
 
-Target "StartDbContainer" <| fun _ -> 
-    
-
-    StopService "docker"
-    
+Target "StartDbContainer" <| fun _ ->  
     let pwsh = ExecProcessAndReturnMessages (fun info ->
         info.FileName <- "powershell.exe"
         info.Arguments <- @"Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Wininit' -Name 'Headless'") (TimeSpan.FromMinutes 5.0)
     pwsh.Messages |> Seq.iter (logfn "%O")
     pwsh.Errors |> Seq.iter (logfn "%O") 
 
+    StopService "docker"
     StartService "docker"
 
 //    let posh = ExecProcessAndReturnMessages (fun info ->
