@@ -143,15 +143,23 @@ Target "RunTests" <| fun _ ->
 
 Target "StartDbContainer" <| fun _ -> 
     
+
     StopService "docker"
+    
+    let pwsh = ExecProcessAndReturnMessages (fun info ->
+        info.FileName <- "powershell.exe"
+        info.Arguments <- @"Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Wininit' -Name 'Headless'") (TimeSpan.FromMinutes 5.0)
+    pwsh.Messages |> Seq.iter (logfn "%O")
+    pwsh.Errors |> Seq.iter (logfn "%O") 
+
     StartService "docker"
 
-    let posh = ExecProcessAndReturnMessages (fun info ->
-        info.FileName <- @"powershell.exe" 
-        info.Arguments <- @"Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Virtualization-Documentation/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsing | Invoke-Expression"
-        info.CreateNoWindow <- true) (TimeSpan.FromMinutes 5.0)
-    posh.Messages |> Seq.iter (logfn "%O")
-    posh.Errors |> Seq.iter (logfn "%O") 
+//    let posh = ExecProcessAndReturnMessages (fun info ->
+//        info.FileName <- @"powershell.exe" 
+//        info.Arguments <- @"Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Virtualization-Documentation/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsing | Invoke-Expression"
+//        info.CreateNoWindow <- true) (TimeSpan.FromMinutes 5.0)
+//    posh.Messages |> Seq.iter (logfn "%O")
+//    posh.Errors |> Seq.iter (logfn "%O") 
 
     logfn "Starting SQL Express Docker container..."
     let posh = PowerShell.Create().AddScript(@"./docker_sql_express.ps1")
