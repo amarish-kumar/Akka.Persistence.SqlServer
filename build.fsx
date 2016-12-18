@@ -194,15 +194,10 @@ Target "DiagnoseDockerOnBuildAgent" <| fun _ ->
 //                    .AddScript(@"rm C:\ProgramData\docker.pid")
 //                    .AddScript(@"Remove-ItemProperty -Path 'HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization\Containers' -Name VSmbDisableOplocks")
 //                    .AddScript(@"Restart-Service docker -Force")
-
-//                    .AddScript(@"Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Virtualization-Documentation/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsing | Invoke-Expression | Export-CSV containerDebug.csv")
-//                    .AddScript(@"cat containerDebug.csv")
-
-                    .AddScript(@"Get-NetNat | Remove-NetNat -Force")
-                    .AddScript(@"Start-Service docker -Force")
-                     
-                    .AddScript(@"Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-30)  | Sort-Object Time | Export-CSV last30minutes.csv")
-                    .AddScript(@"cat last30minutes.csv")
+                    .AddScript(@"Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Virtualization-Documentation/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsing | Invoke-Expression")
+//                    .AddScript(@"Start-Service docker -Confirm")                     
+//                    .AddScript(@"Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-30)  | Sort-Object Time | Export-CSV last30minutes.csv")
+//                    .AddScript(@"cat last30minutes.csv")
 
     posh.Invoke() 
         |> Seq.iter (fun x -> logfn "%O" x)
