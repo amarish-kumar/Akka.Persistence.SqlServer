@@ -143,7 +143,6 @@ Target "RunTests" <| fun _ ->
 Target "StartDbContainer" <| fun _ -> 
     logfn "Starting SQL Express Docker container..."
     let posh = PowerShell.Create()                    
-                    .AddScript(@"wget https://github.com/Microsoft/Virtualization-Documentation/raw/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsin | iex")
                     .AddScript(@"./docker_sql_express.ps1")
     posh.Invoke() |> Seq.iter (logfn "%O")
     match posh.HadErrors with
@@ -189,35 +188,6 @@ FinalTarget "TearDownDbContainer" <| fun _ ->
 Target "ActivateFinalTargets"  <| fun _ ->
     ActivateFinalTarget "TearDownDbContainer"
 
-open Fake.ProcessHelper
-
-Target "DiagnoseDockerOnBuildAgent" <| fun _ ->
-//    let posh = PowerShell.Create()
-////                    .AddScript(@"rm C:\ProgramData\docker.pid")
-////                    .AddScript(@"Remove-ItemProperty -Path 'HKLM:SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization\Containers' -Name VSmbDisableOplocks")
-////                    .AddScript(@"Restart-Service docker -Force")
-////                    .AddScript(@"Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Virtualization-Documentation/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsing | Invoke-Expression")
-////                    .AddScript(@"Start-Service docker -Confirm")                     
-////                    .AddScript(@"Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-30)  | Sort-Object Time | Export-CSV last30minutes.csv")
-////                    .AddScript(@"cat last30minutes.csv")
-//                .AddScript(@"docker version")
-//
-//    posh.Invoke() 
-//        |> Seq.iter (fun x -> logfn "%O" x)
-//    match posh.HadErrors with
-//    | true -> posh.Streams.Error |> Seq.iter (logfn "\t %O")
-//    | false -> ()
-        let posh = ExecProcessAndReturnMessages (fun info ->
-            info.FileName <- @"powershell.exe" 
-            info.Arguments <- @"ls 'C:\ProgramData\docker'"
-            info.CreateNoWindow <- true) (TimeSpan.FromMinutes 5.0)
-        posh.Messages |> Seq.iter (logfn "%O")
-        posh.Errors |> Seq.iter (logfn "%O")       
-        log (posh.OK.ToString())
-//        ExecProcessElevated "powershell" "Restart-Service docker -Force" (TimeSpan.FromMinutes 5.0)
-//        |> ignore
-
-    
 //--------------------------------------------------------------------------------
 // Nuget targets 
 //--------------------------------------------------------------------------------
