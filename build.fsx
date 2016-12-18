@@ -14,6 +14,7 @@ open Fake.TaskRunnerHelper
 open Fake.ProcessHelper
 open Fake.EnvironmentHelper
 open Fake.ConfigurationHelper
+open Fake.ProcessHelper
 
 cd __SOURCE_DIRECTORY__
 
@@ -152,6 +153,16 @@ Target "StartDbContainer" <| fun _ ->
     match environVarOrNone "container_ip" with
     | Some x -> logfn "SQL Express Docker container created with IP address: %s" x
     | None -> failwith "SQL Express Docker container env:container_ip not set... failing build"
+
+//    let dbStartProc = ExecProcessAndReturnMessages (fun info ->
+//        info.FileName <- "powershell.exe"
+//        info.Arguments <- "./docker_sql_express.ps1"
+//        info.CreateNoWindow <- true) (TimeSpan.FromMinutes 5.0)
+//    
+//    match dbStartProc.OK with
+//    | true -> dbStartProc.Messages |> Seq.iter (logfn "%O")
+//    | false -> dbStartProc.Errors |> Seq.iter (logfn "%O") 
+//               failwith "SQL Express Docker container startup encountered an error... failing build"
 
 Target "PrepAppConfig" <| fun _ -> 
     let ip = environVarOrNone "container_ip"
