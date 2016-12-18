@@ -209,7 +209,7 @@ Target "DiagnoseDockerOnBuildAgent" <| fun _ ->
 //    | false -> ()
         let posh = ExecProcessAndReturnMessages (fun info ->
             info.FileName <- @"powershell.exe" 
-            info.Arguments <- @"Restart-Service docker -Force"
+            info.Arguments <- @"ls 'C:\ProgramData'"
             info.CreateNoWindow <- true) (TimeSpan.FromMinutes 5.0)
         posh.Messages |> Seq.iter (logfn "%O")
         posh.Errors |> Seq.iter (logfn "%O")       
