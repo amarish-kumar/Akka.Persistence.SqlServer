@@ -14,6 +14,7 @@ open Fake.TaskRunnerHelper
 open Fake.ProcessHelper
 open Fake.EnvironmentHelper
 open Fake.ConfigurationHelper
+open Fake.ProcessHelper
 
 cd __SOURCE_DIRECTORY__
 
@@ -141,9 +142,12 @@ Target "RunTests" <| fun _ ->
         xunitTestAssemblies
 
 Target "StartDbContainer" <| fun _ -> 
+    
+    StopService "docker"
+    StartService "docker"
+
     logfn "Starting SQL Express Docker container..."
-    let posh = PowerShell.Create()                    
-                    .AddScript(@"./docker_sql_express.ps1")
+    let posh = PowerShell.Create().AddScript(@"./docker_sql_express.ps1")
     posh.Invoke() |> Seq.iter (logfn "%O")
     match posh.HadErrors with
     | true -> posh.Streams.Error |> Seq.iter (logfn "\t %O")
