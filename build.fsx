@@ -173,7 +173,7 @@ Target "RestartDocker" <| fun _ ->
 
     let posh = ExecProcessAndReturnMessages (fun info ->
         info.FileName <- @"powershell.exe" 
-        info.Arguments <- @"Get-ContainerNetwork"
+        info.Arguments <- @"Get-ContainerNetwork | Remove-ContainerNetwork"
         info.CreateNoWindow <- true) (TimeSpan.FromMinutes 5.0)
     posh.Messages |> Seq.iter (logfn "%O")
     posh.Errors |> Seq.iter (logfn "%O")       
