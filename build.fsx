@@ -154,22 +154,30 @@ Target "RestartDocker" <| fun _ ->
 //    pwsh.Messages |> Seq.iter (logfn "%O")
 //    pwsh.Errors |> Seq.iter (logfn "%O") 
 
+//    let posh = ExecProcessAndReturnMessages (fun info ->
+//        info.FileName <- @"powershell.exe" 
+//        info.Arguments <- @"Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Virtualization-Documentation/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsing | Invoke-Expression"
+//        info.CreateNoWindow <- true) (TimeSpan.FromMinutes 5.0)
+//    posh.Messages |> Seq.iter (logfn "%O")
+//    posh.Errors |> Seq.iter (logfn "%O")       
+//    log (posh.OK.ToString())
+//
+//    let posh2 = PowerShell.Create()                   
+//                    .AddScript(@"Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-30)  | Sort-Object Time | Export-CSV last30minutes.csv")
+//                    .AddScript(@"cat last30minutes.csv")
+//    posh2.Invoke() 
+//        |> Seq.iter (fun x -> logfn "%O" x)
+//    match posh2.HadErrors with
+//    | true -> posh2.Streams.Error |> Seq.iter (logfn "\t %O")
+//    | false -> ()
+
     let posh = ExecProcessAndReturnMessages (fun info ->
         info.FileName <- @"powershell.exe" 
-        info.Arguments <- @"Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Virtualization-Documentation/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsing | Invoke-Expression"
+        info.Arguments <- @"Get-ContainerNetwork"
         info.CreateNoWindow <- true) (TimeSpan.FromMinutes 5.0)
     posh.Messages |> Seq.iter (logfn "%O")
     posh.Errors |> Seq.iter (logfn "%O")       
     log (posh.OK.ToString())
-
-    let posh2 = PowerShell.Create()                   
-                    .AddScript(@"Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-30)  | Sort-Object Time | Export-CSV last30minutes.csv")
-                    .AddScript(@"cat last30minutes.csv")
-    posh2.Invoke() 
-        |> Seq.iter (fun x -> logfn "%O" x)
-    match posh2.HadErrors with
-    | true -> posh2.Streams.Error |> Seq.iter (logfn "\t %O")
-    | false -> ()
 
     StopService "docker"
     StartService "docker"
