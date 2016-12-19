@@ -142,6 +142,10 @@ Target "RunTests" <| fun _ ->
         xunitTestAssemblies
 
 Target "RestartDocker" <| fun _ ->
+    
+    getRegistryValue64 RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
+    getRegistryValue RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
+
     let pwsh = ExecProcessAndReturnMessages (fun info ->
         info.FileName <- "powershell.exe"
         info.Arguments <- @"Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Wininit' -Name 'Headless'") (TimeSpan.FromMinutes 5.0)
