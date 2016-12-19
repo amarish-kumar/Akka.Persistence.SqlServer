@@ -163,8 +163,8 @@ Target "RestartDocker" <| fun _ ->
     log (posh.OK.ToString())
 
     let posh2 = PowerShell.Create()                   
-                .AddScript(@"Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-30)  | Sort-Object Time | Export-CSV last30minutes.csv")
-                .AddScript(@"cat last30minutes.csv")
+                    .AddScript(@"Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-30)  | Sort-Object Time | Export-CSV last30minutes.csv")
+                    .AddScript(@"cat last30minutes.csv")
     posh2.Invoke() 
         |> Seq.iter (fun x -> logfn "%O" x)
     match posh2.HadErrors with
