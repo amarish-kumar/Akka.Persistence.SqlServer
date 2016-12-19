@@ -15,6 +15,7 @@ open Fake.ProcessHelper
 open Fake.EnvironmentHelper
 open Fake.ConfigurationHelper
 open Fake.ProcessHelper
+open Fake.RegistryHelper
 
 cd __SOURCE_DIRECTORY__
 
@@ -146,11 +147,16 @@ Target "RestartDocker" <| fun _ ->
     getRegistryValue64 RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
     getRegistryValue RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
 
-    let pwsh = ExecProcessAndReturnMessages (fun info ->
-        info.FileName <- "powershell.exe"
-        info.Arguments <- @"Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Wininit' -Name 'Headless'") (TimeSpan.FromMinutes 5.0)
-    pwsh.Messages |> Seq.iter (logfn "%O")
-    pwsh.Errors |> Seq.iter (logfn "%O") 
+    deleteRegistryValue RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless"
+
+    getRegistryValue64 RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
+    getRegistryValue RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
+
+//    let pwsh = ExecProcessAndReturnMessages (fun info ->
+//        info.FileName <- "powershell.exe"
+//        info.Arguments <- @"Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Wininit' -Name 'Headless'") (TimeSpan.FromMinutes 5.0)
+//    pwsh.Messages |> Seq.iter (logfn "%O")
+//    pwsh.Errors |> Seq.iter (logfn "%O") 
 
     StopService "docker"
     StartService "docker"
