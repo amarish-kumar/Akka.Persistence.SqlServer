@@ -151,7 +151,7 @@ Target "StartDbContainer" <| fun _ ->
 //    StopService "docker"
 //    StartService "docker"
 
-    ExecProcessElevated "Start-Service docker" "" (TimeSpan.FromMinutes 5.0) |> ignore
+    ExecProcessElevated "powershell.exe" "Restart-Service docker" (TimeSpan.FromMinutes 5.0) |> ignore
 
 //    let posh = ExecProcessAndReturnMessages (fun info ->
 //        info.FileName <- @"powershell.exe" 
