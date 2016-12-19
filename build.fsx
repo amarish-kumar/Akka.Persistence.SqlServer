@@ -148,8 +148,10 @@ Target "StartDbContainer" <| fun _ ->
     pwsh.Messages |> Seq.iter (logfn "%O")
     pwsh.Errors |> Seq.iter (logfn "%O") 
 
-    StopService "docker"
-    StartService "docker"
+//    StopService "docker"
+//    StartService "docker"
+
+    ExecProcessElevated "Start-Service docker" "" (TimeSpan.FromMinutes 5.0) |> ignore
 
 //    let posh = ExecProcessAndReturnMessages (fun info ->
 //        info.FileName <- @"powershell.exe" 
