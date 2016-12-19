@@ -147,7 +147,9 @@ Target "RestartDocker" <| fun _ ->
 //    getRegistryValue64 RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
 //    getRegistryValue RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
 
-    deleteRegistryValue RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless"
+    match valueExistsForKey RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" with
+    | true -> deleteRegistryValue RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless"
+    | false -> ()
 
 //    getRegistryValue64 RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
 //    getRegistryValue RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
