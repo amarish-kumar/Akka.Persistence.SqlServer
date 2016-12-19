@@ -141,18 +141,17 @@ Target "RunTests" <| fun _ ->
         (fun p -> { p with HtmlOutputPath = Some(testOutput @@ "xunit.html") })
         xunitTestAssemblies
 
-Target "StartDbContainer" <| fun _ ->  
+Target "RestartDocker" <| fun _ ->
     let pwsh = ExecProcessAndReturnMessages (fun info ->
         info.FileName <- "powershell.exe"
         info.Arguments <- @"Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Wininit' -Name 'Headless'") (TimeSpan.FromMinutes 5.0)
     pwsh.Messages |> Seq.iter (logfn "%O")
     pwsh.Errors |> Seq.iter (logfn "%O") 
 
-//    StopService "docker"
-//    StartService "docker"
+    StopService "docker"
+    StartService "docker"
 
-    ExecProcessElevated "powershell.exe" "Restart-Service docker" (TimeSpan.FromMinutes 5.0) |> ignore
-
+Target "StartDbContainer" <| fun _ ->
 //    let posh = ExecProcessAndReturnMessages (fun info ->
 //        info.FileName <- @"powershell.exe" 
 //        info.Arguments <- @"Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Virtualization-Documentation/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsing | Invoke-Expression"
@@ -501,7 +500,7 @@ Target "HelpDocs" <| fun _ ->
 
 // tests with docker dependencies
 Target "RunTestsWithDocker" DoNothing
-"CleanTests" ==> "ActivateFinalTargets" ==> "StartDbContainer" ==> "PrepAppConfig" ==> "RunTests" ==> "RunTestsWithDocker"
+"CleanTests" ==> "ActivateFinalTargets" ==> "RestartDocker" ==> "StartDbContainer" ==> "PrepAppConfig" ==> "RunTests" ==> "RunTestsWithDocker"
 
 // nuget dependencies
 "CleanNuget" ==> "CreateNuget"
