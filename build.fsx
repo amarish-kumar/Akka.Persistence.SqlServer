@@ -144,13 +144,13 @@ Target "RunTests" <| fun _ ->
 
 Target "RestartDocker" <| fun _ ->
     
-    getRegistryValue64 RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
-    getRegistryValue RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
+//    getRegistryValue64 RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
+//    getRegistryValue RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
 
     deleteRegistryValue RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless"
 
-    getRegistryValue64 RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
-    getRegistryValue RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
+//    getRegistryValue64 RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
+//    getRegistryValue RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" |> logfn "%O"
 
 //    let pwsh = ExecProcessAndReturnMessages (fun info ->
 //        info.FileName <- "powershell.exe"
