@@ -142,54 +142,7 @@ Target "RunTests" <| fun _ ->
         (fun p -> { p with HtmlOutputPath = Some(testOutput @@ "xunit.html") })
         xunitTestAssemblies
 
-Target "RestartDocker" <| fun _ ->
-    
-    match valueExistsForKey RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless" with
-    | true -> deleteRegistryValue RegistryBaseKey.HKEYLocalMachine @"SYSTEM\CurrentControlSet\Control\Wininit\" "Headless"
-    | false -> ()
-
-//    let pwsh = ExecProcessAndReturnMessages (fun info ->
-//        info.FileName <- "powershell.exe"
-//        info.Arguments <- @"Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Wininit' -Name 'Headless'") (TimeSpan.FromMinutes 5.0)
-//    pwsh.Messages |> Seq.iter (logfn "%O")
-//    pwsh.Errors |> Seq.iter (logfn "%O") 
-
-//    let posh = ExecProcessAndReturnMessages (fun info ->
-//        info.FileName <- @"powershell.exe" 
-//        info.Arguments <- @"Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Virtualization-Documentation/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsing | Invoke-Expression"
-//        info.CreateNoWindow <- true) (TimeSpan.FromMinutes 5.0)
-//    posh.Messages |> Seq.iter (logfn "%O")
-//    posh.Errors |> Seq.iter (logfn "%O")       
-//    log (posh.OK.ToString())
-//
-//    let posh2 = PowerShell.Create()                   
-//                    .AddScript(@"Get-EventLog -LogName Application -Source Docker -After (Get-Date).AddMinutes(-30)  | Sort-Object Time | Export-CSV last30minutes.csv")
-//                    .AddScript(@"cat last30minutes.csv")
-//    posh2.Invoke() 
-//        |> Seq.iter (fun x -> logfn "%O" x)
-//    match posh2.HadErrors with
-//    | true -> posh2.Streams.Error |> Seq.iter (logfn "\t %O")
-//    | false -> ()
-
-    let posh = ExecProcessAndReturnMessages (fun info ->
-        info.FileName <- @"powershell.exe" 
-        info.Arguments <- @"Get-ContainerNetwork | Remove-ContainerNetwork"
-        info.CreateNoWindow <- true) (TimeSpan.FromMinutes 5.0)
-    posh.Messages |> Seq.iter (logfn "%O")
-    posh.Errors |> Seq.iter (logfn "%O")       
-    log (posh.OK.ToString())
-
-    StopService "docker"
-    StartService "docker"
-
 Target "StartDbContainer" <| fun _ ->
-//    let posh = ExecProcessAndReturnMessages (fun info ->
-//        info.FileName <- @"powershell.exe" 
-//        info.Arguments <- @"Invoke-WebRequest https://raw.githubusercontent.com/Microsoft/Virtualization-Documentation/master/windows-server-container-tools/Debug-ContainerHost/Debug-ContainerHost.ps1 -UseBasicParsing | Invoke-Expression"
-//        info.CreateNoWindow <- true) (TimeSpan.FromMinutes 5.0)
-//    posh.Messages |> Seq.iter (logfn "%O")
-//    posh.Errors |> Seq.iter (logfn "%O") 
-
     logfn "Starting SQL Express Docker container..."
     let posh = PowerShell.Create().AddScript(@"./docker_sql_express.ps1")
     posh.Invoke() |> Seq.iter (logfn "%O")
@@ -200,16 +153,6 @@ Target "StartDbContainer" <| fun _ ->
     match environVarOrNone "container_ip" with
     | Some x -> logfn "SQL Express Docker container created with IP address: %s" x
     | None -> failwith "SQL Express Docker container env:container_ip not set... failing build"
-
-//    let dbStartProc = ExecProcessAndReturnMessages (fun info ->
-//        info.FileName <- "powershell.exe"
-//        info.Arguments <- "./docker_sql_express.ps1"
-//        info.CreateNoWindow <- true) (TimeSpan.FromMinutes 5.0)
-//    
-//    match dbStartProc.OK with
-//    | true -> dbStartProc.Messages |> Seq.iter (logfn "%O")
-//    | false -> dbStartProc.Errors |> Seq.iter (logfn "%O") 
-//               failwith "SQL Express Docker container startup encountered an error... failing build"
 
 Target "PrepAppConfig" <| fun _ -> 
     let ip = environVarOrNone "container_ip"
@@ -541,7 +484,7 @@ Target "HelpDocs" <| fun _ ->
 
 // tests with docker dependencies
 Target "RunTestsWithDocker" DoNothing
-"CleanTests" ==> "ActivateFinalTargets" ==> "RestartDocker" ==> "StartDbContainer" ==> "PrepAppConfig" ==> "RunTests" ==> "RunTestsWithDocker"
+"CleanTests" ==> "ActivateFinalTargets" ==> "StartDbContainer" ==> "PrepAppConfig" ==> "RunTests" ==> "RunTestsWithDocker"
 
 // nuget dependencies
 "CleanNuget" ==> "CreateNuget"
