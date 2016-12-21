@@ -145,14 +145,16 @@ Target "RunTests" <| fun _ ->
 Target "StartDbContainer" <| fun _ ->
     logfn "Starting SQL Express Docker container..."
 
-    let imageNameParamGiven = hasBuildParam "dockerImage"
+    let dockerImage = getBuildParamOrDefault "dockerImage" @"microsoft/mssql-server-windows-express"
 
-    let posh = PowerShell.Create().AddScript(@"./docker_sql_express.ps1")
+    let posh = PowerShell.Create().AddScript(sprintf @"./docker_sql_express.ps1 -dockerImage %s" dockerImage)
     posh.Invoke() |> Seq.iter (logfn "%O")
+
     match posh.HadErrors with
     | true -> posh.Streams.Error |> Seq.iter (logfn "\t %O")
               failwith "SQL Express Docker container startup encountered an error... failing build"
     | false -> ()
+
     match environVarOrNone "container_ip" with
     | Some x -> logfn "SQL Express Docker container created with IP address: %s" x
     | None -> failwith "SQL Express Docker container env:container_ip not set... failing build"
